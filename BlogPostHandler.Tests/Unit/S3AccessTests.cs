@@ -1,0 +1,176 @@
+﻿using System;
+using System.IO;
+using System.Threading;
+using System.Threading.Tasks;
+using Amazon;
+using Amazon.S3;
+using Amazon.S3.Model;
+using BlogPostHandler.AccessLayers;
+using BlogPostHandler.Models.Response;
+using NSubstitute;
+using NSubstitute.ExceptionExtensions;
+using NUnit.Framework;
+
+namespace BlogPostHandler.Tests.Unit
+{
+    #region Fakes
+
+    // using extract and override
+    public class FakeS3Access : S3Access
+    {
+        public string Expected { get; set; }
+        //public Metadata ExpectedMetadata { get; set; }
+
+        public async override Task<string> GetObject(GetObjectRequest request)
+        {
+            return await Task.FromResult(Expected);
+        }
+    }
+
+    public class FakeMyAmazonS3Client : MyAmazonS3Client
+    {
+        public FakeMyAmazonS3Client(AmazonS3Config config) : base(config)
+        {
+        }
+
+        public override Task<GetObjectResponse> GetObjectAsync(GetObjectRequest request, CancellationToken cancellationToken = default(CancellationToken))
+        {
+            return Task.FromResult<GetObjectResponse>(null);
+        }
+    }
+
+    #endregion
+
+    #region Utility
+
+    public static class Utility
+    {
+        public static AmazonS3Config GetS3Config(string bucketRegionString)
+        {
+            AmazonS3Config S3Config = new AmazonS3Config();
+            RegionEndpoint bucketRegion = RegionEndpoint.GetBySystemName(bucketRegionString);
+            S3Config.RegionEndpoint = bucketRegion;
+
+            return S3Config;
+        }
+    }
+
+    #endregion
+
+
+    [TestFixture]
+    public class S3AccessTests
+    {
+        #region GetBlogPostContents Tests
+
+        public static object[] GetBlogPostContent_Inputs = { "expectedResult",
+        "A very long input that is very long", "1"};
+
+        [Test]
+        [TestCaseSource("GetBlogPostContent_Inputs")]
+        public void GetBlogPostContents_SimpleString_ReturnsTrue(string expectedResult)
+        {
+            // Arrange
+            FakeS3Access access = new FakeS3Access();
+            access.Expected = expectedResult;
+
+            // Act
+            var response = access.GetBlogPostContent(new BlogPost(1), "test", "test");
+            response.Wait();
+            string result = response.Result;
+
+            // Assert
+            Assert.That(result.Equals(expectedResult));
+        }
+
+        [Test]
+        public void GetBlogPostContents_NullKeyName_ThrowsException()
+        {
+            // Arrange
+            S3Access access = new S3Access();
+
+            // Act/Assert
+            Assert.ThrowsAsync<ArgumentNullException>(() => access.GetBlogPostContent(new BlogPost(1), "test", null));
+        }
+
+        [Test]
+        public void GetBlogPostContents_NullPostsDirectory_ThrowsException()
+        {
+            // Arrange
+            S3Access access = new S3Access();
+            
+            // Act/Assert
+            Assert.ThrowsAsync<ArgumentNullException>(() => access.GetBlogPostContent(new BlogPost(1), null, "test"));
+        }
+
+        #endregion
+
+        #region GetMetadata Tests
+
+        public static object[] GetMetadata_Inputs = {
+           "title\ntag1,tag2,tag3",
+           "A Very Long Title that is long\nTag A, Tag B, Tag 100"
+        };
+
+        [Test]
+        [TestCaseSource("GetMetadata_Inputs")]
+        public void GetMetadata_SimpleString_ReturnsTrue(string expectedResult)
+        {
+            // Arrange
+            FakeS3Access access = new FakeS3Access();
+            access.Expected = expectedResult;
+
+            // Act
+            var response = access.GetMetadata(new Metadata(1), "test", "test");
+            response.Wait();
+            Metadata result = response.Result;
+
+            // Assert
+            Assert.That(result.Equals(Metadata.ToMetadata(result, expectedResult)));
+        }
+
+        [Test]
+        public void GetMetadata_NullMetaDirectory_ThrowsException()
+        {
+            // Arrange
+            S3Access access = new S3Access();
+
+            // Act/Assert
+            Assert.ThrowsAsync<ArgumentNullException>(() => access.GetMetadata(new Metadata(1), "test", null));
+        }
+
+        [Test]
+        public void GetMetadata_NullKeyName_ThrowsException()
+        {
+            // Arrange
+            S3Access access = new S3Access();
+
+            // Act/Assert
+            Assert.ThrowsAsync<ArgumentNullException>(() => access.GetMetadata(new Metadata(1), null, "test"));
+        }
+
+        #endregion
+
+        #region GetObject Tests
+
+        [Test]
+        //[Ignore("need to stub out AmazonS3Client and AmazonS3Config to test this rightly")]
+        public void GetObject_NullInput_ReturnsString()
+        {
+            // Arrange
+            var fakeS3Client = new FakeMyAmazonS3Client(Utility.GetS3Config("test"));
+
+            S3Access access = new S3Access("test", "test");
+            access.S3Client = fakeS3Client;
+
+            // Act/Assert
+            Assert.ThrowsAsync<Exception>(() => access.GetObject(new GetObjectRequest {
+                BucketName = Arg.Any<string>(),
+                Key = Arg.Any<string>()
+            }));
+        }
+
+        #endregion
+
+    }
+}
