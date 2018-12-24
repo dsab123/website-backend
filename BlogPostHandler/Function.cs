@@ -20,7 +20,7 @@ namespace BlogPostHandler
         public BlogPost FunctionHandler(BlogPostId input, ILambdaContext context)
         {
             // error handling? how? all I need is the input.Id which is an int..
-
+            LambdaLogger.Log("BlogPostHandler Lambda Started");
 
             // Config/Initialization
             EnvironmentHandler env = new EnvironmentHandler();
@@ -52,7 +52,6 @@ namespace BlogPostHandler
             }
             else
             {
-                post.Metadata.Title = "WOOP WOOP POST NULL";
                 return null;
             }
                         

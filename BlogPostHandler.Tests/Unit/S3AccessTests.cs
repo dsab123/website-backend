@@ -163,8 +163,22 @@ namespace BlogPostHandler.Tests.Unit
             S3Access access = new S3Access("test", "test");
             access.S3Client = fakeS3Client;
 
+            // if I decide to return a string instead of throw an exception...
+            // Act
+            //var response = access.GetObject(new GetObjectRequest
+            //{
+            //    BucketName = Arg.Any<string>(),
+            //    Key = Arg.Any<string>()
+            //});
+            //response.Wait();
+            //var expectedResult = response.Result;
+            //
+            //// Assert
+            //Assert.That(BlogPostException.ErrorBlogPostContents.Equals(expectedResult));
+
             // Act/Assert
-            Assert.ThrowsAsync<Exception>(() => access.GetObject(new GetObjectRequest {
+            Assert.ThrowsAsync<Exception>(() => access.GetObject(new GetObjectRequest
+            {
                 BucketName = Arg.Any<string>(),
                 Key = Arg.Any<string>()
             }));

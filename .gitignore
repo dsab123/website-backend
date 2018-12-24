@@ -339,3 +339,7 @@ ASALocalRun/
 
 # BeatPulse healthcheck temp database 
 healthchecksdb
+
+# for the zip files I create to upload
+BlogPostHandler/BlogPostHandler_old.zip
+BlogPostHandler/BlogPostHandler.zip

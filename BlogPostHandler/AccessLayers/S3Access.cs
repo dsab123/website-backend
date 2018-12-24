@@ -1,10 +1,10 @@
 ﻿using Amazon;
+using Amazon.Lambda.Core;
 using Amazon.S3;
 using Amazon.S3.Model;
-using BlogPostHandler.Models;
+using BlogPostHandler.Utility;
 using BlogPostHandler.Models.Response;
 using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Net;
 using System.Text;
@@ -57,13 +57,13 @@ namespace BlogPostHandler.AccessLayers
             }
             catch (AmazonS3Exception s3Ex)
             {
-                // is there any purpose of catching AmazonS3Exception separately from Exception?
-
-                throw new Exception($"Exception - bucketName: {request.BucketName},  key: {request.Key}.", s3Ex);
+               LambdaLogger.Log(ExceptionLogFormatter.FormatExceptionLogMessage(request, s3Ex));
+                throw new Exception("Exception - " + s3Ex.Message, s3Ex);
             } 
             catch (Exception ex)
             {
-                throw new Exception($"Exception - bucketName: {request.BucketName},  key: {request.Key}.", ex);
+                LambdaLogger.Log(ExceptionLogFormatter.FormatExceptionLogMessage(ex));
+                throw new Exception("Exception - " + ex.Message, ex);
             }
 
             return content;
