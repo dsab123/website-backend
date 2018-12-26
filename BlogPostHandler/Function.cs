@@ -17,7 +17,7 @@ namespace BlogPostHandler
         /// <param name="input">The Incoming BlogPostId</param>
         /// <param name="context">The Lambda event context</param>
         /// <returns></returns>
-        public BlogPost FunctionHandler(BlogPostId input, ILambdaContext context)
+        public BlogPost FunctionHandler(BlogPostInput input, ILambdaContext context)
         {
             // error handling? how? all I need is the input.Id which is an int..
             LambdaLogger.Log("BlogPostHandler Lambda Started");
