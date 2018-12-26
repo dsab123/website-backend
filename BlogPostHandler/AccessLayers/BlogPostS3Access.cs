@@ -87,7 +87,7 @@ namespace BlogPostHandler.AccessLayers
             // check blurb qs value
             if (post.Blurb == true)
             {
-                content = content.Substring(0, BlogPost.BlurbLength);
+                content = content.Substring(0, content.Length > BlogPost.BlurbLength ? BlogPost.BlurbLength : content.Length);
             }
 
             return content;

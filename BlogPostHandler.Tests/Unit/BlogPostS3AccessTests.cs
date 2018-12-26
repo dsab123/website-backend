@@ -105,14 +105,21 @@ namespace BlogPostHandler.Tests.Unit
         }
 
 
+
+        static object[] GetBlogPostContents_BlurbSetToTrue_ReturnsBlurbOfContents_inputs = 
+            {
+            new object[] { "123456789 123456789 123456789 123456789 123456789 123456789 123456789 123456789 123456789 123456789 ", true },// 100 char string
+            new object[] { "this is Bo", false } // 10 char string
+        };
+
         [Test]
-        public void GetBlogPostContents_BlurbSetToTrue_ReturnsBlurbOfContents()
+        [TestCaseSource("GetBlogPostContents_BlurbSetToTrue_ReturnsBlurbOfContents_inputs")]
+        public void GetBlogPostContents_BlurbSetToTrue_ReturnsBlurbOfContents(string fakeBlogPostContents, bool isEqualToOrLessThanBlurbLength)
         {
             // Arrange
             FakeBlogPostS3Access access = new FakeBlogPostS3Access();
             // I'd like to make the blurb length not hardcoded to 50 here; else if I change it this test will break
-            string hundredCharString = "123456789 123456789 123456789 123456789 123456789 123456789 123456789 123456789 123456789 123456789 ";
-            access.Expected = hundredCharString;
+            access.Expected = fakeBlogPostContents;
 
             // Act
             var response = access.GetBlogPostContent(new BlogPost(1, true), "test", "test");
@@ -120,14 +127,26 @@ namespace BlogPostHandler.Tests.Unit
             string result = response.Result;
 
             // Assert
-            Assert.That(result.Length == BlogPost.BlurbLength);
+            if (isEqualToOrLessThanBlurbLength)
+            {
+                Assert.That(result.Length == BlogPost.BlurbLength);
+            }
+            else
+            {
+                Assert.That(result.Length <= BlogPost.BlurbLength);
+            }
         }
 
 
         #endregion
 
         #region GetMetadata Tests
-        
+
+        public static object[] GetMetadata_Inputs = {
+           "title\ntag1,tag2,tag3",
+           "A Very Long Title that is long\nTag A, Tag B, Tag 100"
+        };
+
         [Test]
         [TestCaseSource("GetMetadata_Inputs")]
         public void GetMetadata_SimpleString_ReturnsTrue(string expectedResult)
