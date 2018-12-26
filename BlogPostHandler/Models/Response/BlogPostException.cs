@@ -5,7 +5,7 @@ using System.Text;
 
 namespace BlogPostHandler.Models.Response
 {
-    public class BlogPostException : AmazonLambdaException
+    public class BlogPostException : Exception
     {
         
         public static string ErrorBlogPostTitle = "404, or something.";

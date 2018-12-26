@@ -12,18 +12,18 @@ using System.Threading.Tasks;
 
 namespace BlogPostHandler.AccessLayers
 {
-    public class S3Access : IS3Access, IDisposable
+    public class BlogPostS3Access : IBlogPostS3Access, IDisposable
     {
         public IMyAmazonS3Client S3Client { get; set; }
         public AmazonS3Config S3Config { get; set; }
 
         protected string BucketName;
 
-        public S3Access()
+        public BlogPostS3Access()
         {
         }
 
-        public S3Access(string bucketName, string bucketRegionString)
+        public BlogPostS3Access(string bucketName, string bucketRegionString)
         {
             BucketName = bucketName;
 
@@ -57,7 +57,7 @@ namespace BlogPostHandler.AccessLayers
             }
             catch (AmazonS3Exception s3Ex)
             {
-               LambdaLogger.Log(ExceptionLogFormatter.FormatExceptionLogMessage(request, s3Ex));
+                LambdaLogger.Log(ExceptionLogFormatter.FormatExceptionLogMessage(request, s3Ex));
                 throw new Exception("Exception - " + s3Ex.Message, s3Ex);
             } 
             catch (Exception ex)
@@ -83,6 +83,12 @@ namespace BlogPostHandler.AccessLayers
             };
 
             var content = await GetObject(getRequest);
+
+            // check blurb qs value
+            if (post.Blurb == true)
+            {
+                content = content.Substring(0, BlogPost.BlurbLength);
+            }
 
             return content;
         }

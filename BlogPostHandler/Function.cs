@@ -14,41 +14,41 @@ namespace BlogPostHandler
         /// <summary>
         /// Entry point for the BlogPost Handler.
         /// </summary>
-        /// <param name="input">The Incoming BlogPostId</param>
+        /// <param name="blogPost">The Incoming BlogPost</param>
         /// <param name="context">The Lambda event context</param>
         /// <returns></returns>
-        public BlogPost FunctionHandler(BlogPostInput input, ILambdaContext context)
+        public BlogPost FunctionHandler(BlogPost blogPost, ILambdaContext context)
         {
-            // error handling? how? all I need is the input.Id which is an int..
+            // not using a separate logic layer because this _is_ the logic layer
             LambdaLogger.Log("BlogPostHandler Lambda Started");
 
             // Config/Initialization
             EnvironmentHandler env = new EnvironmentHandler();
 
             string bucketName = env.GetVariable("BucketName");
-            string keyName = input.Id.ToString();
             string bucketRegionString = env.GetVariable("BucketRegion");
             string postsDirectory = env.GetVariable("PostsDirectory");
             string imagesDirectory = env.GetVariable("ImagesDirectory");
             string metaDirectory = env.GetVariable("MetaDirectory");
             
-            S3Access access = new S3Access(bucketName, bucketRegionString);
-
-            BlogPost post = new BlogPost(input.Id);
-
+            BlogPostS3Access access = new BlogPostS3Access(bucketName, bucketRegionString);
+            
             // get post contents
-            var contents = access.GetBlogPostContent(post, postsDirectory, keyName);
+            string keyName = blogPost.Id.ToString();
+
+            var contents = access.GetBlogPostContent(blogPost, postsDirectory, keyName); //TODO remove keyName since its the id of the blogpost
             contents.Wait();
-            post.Content = contents.Result;
+
+            blogPost.Content = contents.Result;
 
             // get post metadata
-            var metadata = access.GetMetadata(post.Metadata, metaDirectory, keyName);
+            var metadata = access.GetMetadata(blogPost.Metadata, metaDirectory, keyName);
             metadata.Wait();
-            post.Metadata = metadata.Result;
+            blogPost.Metadata = metadata.Result;
 
-            if (post != null)
+            if (blogPost != null)
             {
-                return post;
+                return blogPost;
             }
             else
             {

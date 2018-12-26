@@ -1,6 +1,5 @@
 using NUnit.Framework;
 using Amazon.Lambda.TestUtilities;
-using BlogPostHandler.Models.Request;
 using BlogPostHandler.Models.Response;
 
 namespace BlogPostHandler.Tests
@@ -15,7 +14,7 @@ namespace BlogPostHandler.Tests
             // Invoke the lambda function and confirm the string was upper cased.
             var function = new Function();
             var context = new TestLambdaContext();
-            var idOfOne = function.FunctionHandler(new BlogPostId(1), context);
+            var idOfOne = function.FunctionHandler(new BlogPost(1), context);
 
             Assert.AreEqual(idOfOne, new BlogPost(1));
         }

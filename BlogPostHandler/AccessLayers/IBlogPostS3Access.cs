@@ -4,7 +4,7 @@ using BlogPostHandler.Models.Response;
 
 namespace BlogPostHandler.AccessLayers
 {
-    public interface IS3Access
+    public interface IBlogPostS3Access
     {
         Task<string> GetObject(GetObjectRequest request);
 

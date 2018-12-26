@@ -16,10 +16,9 @@ namespace BlogPostHandler.Tests.Unit
     #region Fakes
 
     // using extract and override
-    public class FakeS3Access : S3Access
+    public class FakeBlogPostS3Access : BlogPostS3Access
     {
         public string Expected { get; set; }
-        //public Metadata ExpectedMetadata { get; set; }
 
         public async override Task<string> GetObject(GetObjectRequest request)
         {
@@ -59,7 +58,7 @@ namespace BlogPostHandler.Tests.Unit
 
 
     [TestFixture]
-    public class S3AccessTests
+    public class BlogPostS3AccessTests
     {
         #region GetBlogPostContents Tests
 
@@ -71,8 +70,10 @@ namespace BlogPostHandler.Tests.Unit
         public void GetBlogPostContents_SimpleString_ReturnsTrue(string expectedResult)
         {
             // Arrange
-            FakeS3Access access = new FakeS3Access();
-            access.Expected = expectedResult;
+            FakeBlogPostS3Access access = new FakeBlogPostS3Access
+            {
+                Expected = expectedResult
+            };
 
             // Act
             var response = access.GetBlogPostContent(new BlogPost(1), "test", "test");
@@ -87,7 +88,7 @@ namespace BlogPostHandler.Tests.Unit
         public void GetBlogPostContents_NullKeyName_ThrowsException()
         {
             // Arrange
-            S3Access access = new S3Access();
+            BlogPostS3Access access = new BlogPostS3Access();
 
             // Act/Assert
             Assert.ThrowsAsync<ArgumentNullException>(() => access.GetBlogPostContent(new BlogPost(1), "test", null));
@@ -97,28 +98,45 @@ namespace BlogPostHandler.Tests.Unit
         public void GetBlogPostContents_NullPostsDirectory_ThrowsException()
         {
             // Arrange
-            S3Access access = new S3Access();
+            BlogPostS3Access access = new BlogPostS3Access();
             
             // Act/Assert
             Assert.ThrowsAsync<ArgumentNullException>(() => access.GetBlogPostContent(new BlogPost(1), null, "test"));
         }
 
+
+        [Test]
+        public void GetBlogPostContents_BlurbSetToTrue_ReturnsBlurbOfContents()
+        {
+            // Arrange
+            FakeBlogPostS3Access access = new FakeBlogPostS3Access();
+            // I'd like to make the blurb length not hardcoded to 50 here; else if I change it this test will break
+            string hundredCharString = "123456789 123456789 123456789 123456789 123456789 123456789 123456789 123456789 123456789 123456789 ";
+            access.Expected = hundredCharString;
+
+            // Act
+            var response = access.GetBlogPostContent(new BlogPost(1, true), "test", "test");
+            response.Wait();
+            string result = response.Result;
+
+            // Assert
+            Assert.That(result.Length == BlogPost.BlurbLength);
+        }
+
+
         #endregion
 
         #region GetMetadata Tests
-
-        public static object[] GetMetadata_Inputs = {
-           "title\ntag1,tag2,tag3",
-           "A Very Long Title that is long\nTag A, Tag B, Tag 100"
-        };
-
+        
         [Test]
         [TestCaseSource("GetMetadata_Inputs")]
         public void GetMetadata_SimpleString_ReturnsTrue(string expectedResult)
         {
             // Arrange
-            FakeS3Access access = new FakeS3Access();
-            access.Expected = expectedResult;
+            FakeBlogPostS3Access access = new FakeBlogPostS3Access
+            {
+                Expected = expectedResult
+            };
 
             // Act
             var response = access.GetMetadata(new Metadata(1), "test", "test");
@@ -133,7 +151,7 @@ namespace BlogPostHandler.Tests.Unit
         public void GetMetadata_NullMetaDirectory_ThrowsException()
         {
             // Arrange
-            S3Access access = new S3Access();
+            BlogPostS3Access access = new BlogPostS3Access();
 
             // Act/Assert
             Assert.ThrowsAsync<ArgumentNullException>(() => access.GetMetadata(new Metadata(1), "test", null));
@@ -143,7 +161,7 @@ namespace BlogPostHandler.Tests.Unit
         public void GetMetadata_NullKeyName_ThrowsException()
         {
             // Arrange
-            S3Access access = new S3Access();
+            BlogPostS3Access access = new BlogPostS3Access();
 
             // Act/Assert
             Assert.ThrowsAsync<ArgumentNullException>(() => access.GetMetadata(new Metadata(1), null, "test"));
@@ -160,8 +178,10 @@ namespace BlogPostHandler.Tests.Unit
             // Arrange
             var fakeS3Client = new FakeMyAmazonS3Client(Utility.GetS3Config("test"));
 
-            S3Access access = new S3Access("test", "test");
-            access.S3Client = fakeS3Client;
+            BlogPostS3Access access = new BlogPostS3Access("test", "test")
+            {
+                S3Client = fakeS3Client
+            };
 
             // if I decide to return a string instead of throw an exception...
             // Act
