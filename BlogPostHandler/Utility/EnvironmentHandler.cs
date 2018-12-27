@@ -1,7 +1,7 @@
 ﻿using System;
 using BlogPostHandler.Utility;
 
-namespace BlogPostHandler.Models.Utility
+namespace BlogPostHandler.Utility
 {
     public class EnvironmentHandler : IEnvironmentHandler
     {

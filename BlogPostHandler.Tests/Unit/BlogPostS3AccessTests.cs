@@ -6,7 +6,7 @@ using Amazon;
 using Amazon.S3;
 using Amazon.S3.Model;
 using BlogPostHandler.AccessLayers;
-using BlogPostHandler.Models.Response;
+using BlogPostHandler.Models;
 using NSubstitute;
 using NSubstitute.ExceptionExtensions;
 using NUnit.Framework;
@@ -158,7 +158,7 @@ namespace BlogPostHandler.Tests.Unit
             };
 
             // Act
-            var response = access.GetMetadata(new Metadata(1), "test", "test");
+            var response = access.GetBlogPostMetadata(new Metadata(1), "test", "test");
             response.Wait();
             Metadata result = response.Result;
 
@@ -173,7 +173,7 @@ namespace BlogPostHandler.Tests.Unit
             BlogPostS3Access access = new BlogPostS3Access();
 
             // Act/Assert
-            Assert.ThrowsAsync<ArgumentNullException>(() => access.GetMetadata(new Metadata(1), "test", null));
+            Assert.ThrowsAsync<ArgumentNullException>(() => access.GetBlogPostMetadata(new Metadata(1), "test", null));
         }
 
         [Test]
@@ -183,7 +183,7 @@ namespace BlogPostHandler.Tests.Unit
             BlogPostS3Access access = new BlogPostS3Access();
 
             // Act/Assert
-            Assert.ThrowsAsync<ArgumentNullException>(() => access.GetMetadata(new Metadata(1), null, "test"));
+            Assert.ThrowsAsync<ArgumentNullException>(() => access.GetBlogPostMetadata(new Metadata(1), null, "test"));
         }
 
         #endregion

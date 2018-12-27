@@ -1,7 +1,8 @@
 ﻿
 using Newtonsoft.Json;
+using System.Collections.Generic;
 
-namespace BlogPostHandler.Models.Response
+namespace BlogPostHandler.Models
 {
     public class BlogPost
     {
@@ -13,20 +14,9 @@ namespace BlogPostHandler.Models.Response
 
         public Metadata Metadata;
 
-        public static int BlurbLength = 50;
+        public static int BlurbLength = 50; // how many chars to show in blurbs
 
-        public BlogPost(int id, string title, string content, string[] tags, bool blurb = false)
-        {
-            Id = id;
-            Content = content;
-            Blurb = blurb;
-
-            Metadata = new Metadata(id)
-            {
-                Title = title,
-                Tags = tags
-            };
-        }
+        public IEnumerable<BlogPost> RelatedPosts;
 
         [JsonConstructor]
         public BlogPost(int id, bool blurb = false)
@@ -35,6 +25,8 @@ namespace BlogPostHandler.Models.Response
             Blurb = blurb;
 
             Metadata = new Metadata(id);
+
+            RelatedPosts = new List<BlogPost>();
         }
     }
 }

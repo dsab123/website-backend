@@ -3,7 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace BlogPostHandler.Models.Response
+namespace BlogPostHandler.Models
 {
     public class BlogPostException : Exception
     {
@@ -18,7 +18,7 @@ namespace BlogPostHandler.Models.Response
         public static BlogPost ReturnErrorBlogPost()
         {
             // I'd like to move these to config params, but don't want to access them from Env
-            return new BlogPost(-1, ErrorBlogPostTitle, ErrorBlogPostContents, new string[] {});
+            return new BlogPost(-1);
         }
 
         public static string ReturnErrorBlogPostContents()

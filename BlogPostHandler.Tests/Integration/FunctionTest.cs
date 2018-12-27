@@ -1,6 +1,6 @@
 using NUnit.Framework;
 using Amazon.Lambda.TestUtilities;
-using BlogPostHandler.Models.Response;
+using BlogPostHandler.Models;
 
 namespace BlogPostHandler.Tests
 {

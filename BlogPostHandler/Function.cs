@@ -1,9 +1,8 @@
 using System;
 using Amazon.Lambda.Core;
 using BlogPostHandler.AccessLayers;
-using BlogPostHandler.Models.Request;
-using BlogPostHandler.Models.Response;
-using BlogPostHandler.Models.Utility;
+using BlogPostHandler.Models;
+using BlogPostHandler.Utility;
 
 [assembly: LambdaSerializer(typeof(Amazon.Lambda.Serialization.Json.JsonSerializer))]
 
@@ -42,18 +41,15 @@ namespace BlogPostHandler
             blogPost.Content = contents.Result;
 
             // get post metadata
-            var metadata = access.GetMetadata(blogPost.Metadata, metaDirectory, keyName);
+            var metadata = access.GetBlogPostMetadata(blogPost.Metadata, metaDirectory, keyName);
             metadata.Wait();
             blogPost.Metadata = metadata.Result;
 
-            if (blogPost != null)
-            {
-                return blogPost;
-            }
-            else
-            {
-                return null;
-            }
+            // get related posts
+            var relatedPosts = access.GetRelatedPosts();
+                
+
+            return blogPost;
                         
         }
     }

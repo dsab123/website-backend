@@ -3,7 +3,7 @@ using Amazon.Lambda.Core;
 using Amazon.S3;
 using Amazon.S3.Model;
 using BlogPostHandler.Utility;
-using BlogPostHandler.Models.Response;
+using BlogPostHandler.Models;
 using System;
 using System.IO;
 using System.Net;
@@ -93,7 +93,7 @@ namespace BlogPostHandler.AccessLayers
             return content;
         }
 
-        public async Task<Metadata> GetMetadata(Metadata metadata, string metaDirectory, string keyName)
+        public async Task<Metadata> GetBlogPostMetadata(Metadata metadata, string metaDirectory, string keyName)
         {
             if (metaDirectory == null || keyName == null)
             {

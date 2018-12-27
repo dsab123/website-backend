@@ -1,6 +1,6 @@
 ﻿using System.Threading.Tasks;
 using Amazon.S3.Model;
-using BlogPostHandler.Models.Response;
+using BlogPostHandler.Models;
 
 namespace BlogPostHandler.AccessLayers
 {
@@ -10,6 +10,6 @@ namespace BlogPostHandler.AccessLayers
 
         Task<string> GetBlogPostContent(BlogPost post, string postsDirectory, string keyName);
 
-        Task<Metadata> GetMetadata(Metadata metadata, string metaDirectory, string keyName);
+        Task<Metadata> GetBlogPostMetadata(Metadata metadata, string metaDirectory, string keyName);
     }
 }

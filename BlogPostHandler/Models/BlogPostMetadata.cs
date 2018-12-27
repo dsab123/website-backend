@@ -2,7 +2,7 @@
 using System;
 using System.Linq;
 
-namespace BlogPostHandler.Models.Response
+namespace BlogPostHandler.Models
 {
     public class Metadata
     {
