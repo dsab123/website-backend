@@ -158,7 +158,7 @@ namespace BlogPostHandler.Tests.Unit
             };
 
             // Act
-            var response = access.GetBlogPostMetadata(new Metadata(1), "test", "test");
+            var response = access.GetBlogPostMetadata(new BlogPost(1), "test", "test");
             response.Wait();
             Metadata result = response.Result;
 
@@ -173,7 +173,7 @@ namespace BlogPostHandler.Tests.Unit
             BlogPostS3Access access = new BlogPostS3Access();
 
             // Act/Assert
-            Assert.ThrowsAsync<ArgumentNullException>(() => access.GetBlogPostMetadata(new Metadata(1), "test", null));
+            Assert.ThrowsAsync<ArgumentNullException>(() => access.GetBlogPostMetadata(new BlogPost(1), "test", null));
         }
 
         [Test]
@@ -183,7 +183,7 @@ namespace BlogPostHandler.Tests.Unit
             BlogPostS3Access access = new BlogPostS3Access();
 
             // Act/Assert
-            Assert.ThrowsAsync<ArgumentNullException>(() => access.GetBlogPostMetadata(new Metadata(1), null, "test"));
+            Assert.ThrowsAsync<ArgumentNullException>(() => access.GetBlogPostMetadata(new BlogPost(1), null, "test"));
         }
 
         #endregion

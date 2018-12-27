@@ -9,6 +9,7 @@ using System.IO;
 using System.Net;
 using System.Text;
 using System.Threading.Tasks;
+using System.Collections.Generic;
 
 namespace BlogPostHandler.AccessLayers
 {
@@ -93,7 +94,7 @@ namespace BlogPostHandler.AccessLayers
             return content;
         }
 
-        public async Task<Metadata> GetBlogPostMetadata(Metadata metadata, string metaDirectory, string keyName)
+        public async Task<Metadata> GetBlogPostMetadata(BlogPost blogPost, string metaDirectory, string keyName)
         {
             if (metaDirectory == null || keyName == null)
             {
@@ -108,8 +109,8 @@ namespace BlogPostHandler.AccessLayers
 
             var content = await GetObject(getRequest);
 
-            metadata = Metadata.ToMetadata(metadata, content);
-            return metadata;
+            blogPost.Metadata = Metadata.ToMetadata(blogPost.Metadata, content);
+            return blogPost.Metadata;
         }
 
         public void Dispose()
@@ -128,6 +129,20 @@ namespace BlogPostHandler.AccessLayers
                     this.S3Client = null;
                 }
             }
+        }
+
+        public async Task<IEnumerable<BlogPost>> GetBlogPostRelatedPosts(BlogPost blogPost, string keyName)
+        {
+            // get tagfile
+                // get object 'tagfile'
+                // read tagfile contents in as dictionary<string, dictionary<string>>()
+               
+            // compile list of ids w/same tags as blogPost
+
+            // get X of those objects as blurbs
+            
+
+            return new List<BlogPost>();
         }
     }
 }

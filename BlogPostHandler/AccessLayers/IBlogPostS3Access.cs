@@ -10,6 +10,6 @@ namespace BlogPostHandler.AccessLayers
 
         Task<string> GetBlogPostContent(BlogPost post, string postsDirectory, string keyName);
 
-        Task<Metadata> GetBlogPostMetadata(Metadata metadata, string metaDirectory, string keyName);
+        Task<Metadata> GetBlogPostMetadata(BlogPost post, string metaDirectory, string keyName);
     }
 }

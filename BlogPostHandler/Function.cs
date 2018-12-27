@@ -41,13 +41,14 @@ namespace BlogPostHandler
             blogPost.Content = contents.Result;
 
             // get post metadata
-            var metadata = access.GetBlogPostMetadata(blogPost.Metadata, metaDirectory, keyName);
+            var metadata = access.GetBlogPostMetadata(blogPost, metaDirectory, keyName);
             metadata.Wait();
             blogPost.Metadata = metadata.Result;
 
             // get related posts
-            var relatedPosts = access.GetRelatedPosts();
-                
+            //var relatedPosts = access.GetBlogPostsRelatedPosts();
+            //relatedPosts.Wait();
+            //blogPost.RelatedPosts = relatedPosts.Result;
 
             return blogPost;
                         
