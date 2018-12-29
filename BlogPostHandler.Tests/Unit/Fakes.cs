@@ -1,12 +1,13 @@
 ﻿using Amazon.S3;
 using Amazon.S3.Model;
 using BlogPostHandler.AccessLayers;
+using BlogPostHandler.Models;
 using System.Threading;
 using System.Threading.Tasks;
 
 namespace BlogPostHandler.Tests.Unit
 {
-    // using extract and override
+    // using extract and override for most of these
     public class FakeBlogPostS3Access : BlogPostS3Access
     {
         public string Expected { get; set; }
@@ -36,6 +37,4 @@ namespace BlogPostHandler.Tests.Unit
             //nothing, hoo ha
         }
     }
-
-    
 }
