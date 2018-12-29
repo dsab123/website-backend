@@ -1,5 +1,6 @@
 ﻿using Amazon.S3.Model;
 using BlogPostHandler.Models;
+using BlogPostHandler.Utility;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -23,7 +24,7 @@ namespace BlogPostHandler.AccessLayers
             // use GetObject to retrieve the TagFile
             string tagFileContents = await GetObject(new GetObjectRequest
             {
-                BucketName = Environment.GetEnvironmentVariable("bucketName"),
+                BucketName = EnvironmentHandler.GetEnvironmentHandler().GetVariable("BucketName"),
                 Key = TagFileS3Access.TagFileName
             });
 
@@ -33,7 +34,7 @@ namespace BlogPostHandler.AccessLayers
 
             if (tagFileContents == string.Empty)
             {
-                throw new TagFileException("Empty TagFile.");
+                throw new TagFileException("Exception - Empty TagFile.");
             }
 
             TagFile tagFile = new TagFile();

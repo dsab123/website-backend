@@ -6,28 +6,38 @@ using BlogPostHandler.Models;
 using System;
 using System.Threading.Tasks;
 using System.Collections.Generic;
+using BlogPostHandler.Utility;
 
 namespace BlogPostHandler.AccessLayers
 {
     public class BlogPostS3Access : S3Access, IBlogPostS3Access, IDisposable
     {
-        public AmazonS3Config S3Config { get; set; }
-
         protected string BucketName;
 
         public BlogPostS3Access()
         {
         }
 
-        public BlogPostS3Access(string bucketName, string bucketRegionString)
+        public BlogPostS3Access(string bucketName, string bucketRegionString) : base()
         {
             BucketName = bucketName;
+        }
 
-            S3Config = new AmazonS3Config();
-            RegionEndpoint bucketRegion = RegionEndpoint.GetBySystemName(bucketRegionString);
-            S3Config.RegionEndpoint = bucketRegion;
+        public async Task<BlogPost> GetBlogPost(BlogPost blogPost)
+        {
+            var environmentHandler = EnvironmentHandler.GetEnvironmentHandler();
 
-            S3Client = new MyAmazonS3Client(S3Config);
+            // get post contents
+            string keyName = blogPost.Id.ToString();
+
+            var content = await GetBlogPostContent(blogPost, environmentHandler.GetVariable("PostsDirectory"), keyName); //TODO remove keyName since its the id of the blogpost
+            blogPost.Content = content;
+
+            // get post metadata
+            var metadata = await GetBlogPostMetadata(blogPost, environmentHandler.GetVariable("MetaDirectory"), keyName);
+            blogPost.Metadata = metadata;
+
+            return blogPost;
         }
 
         public async Task<string> GetBlogPostContent(BlogPost post, string postsDirectory, string keyName)
@@ -54,7 +64,7 @@ namespace BlogPostHandler.AccessLayers
             return content;
         }
 
-        public async Task<Metadata> GetBlogPostMetadata(BlogPost blogPost, string metaDirectory, string keyName)
+        public virtual async Task<Metadata> GetBlogPostMetadata(BlogPost blogPost, string metaDirectory, string keyName)
         {
             if (metaDirectory == null || keyName == null)
             {

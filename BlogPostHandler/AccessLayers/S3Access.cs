@@ -1,4 +1,5 @@
-﻿using Amazon.Lambda.Core;
+﻿using Amazon;
+using Amazon.Lambda.Core;
 using Amazon.S3;
 using Amazon.S3.Model;
 using BlogPostHandler.Utility;
@@ -13,9 +14,16 @@ namespace BlogPostHandler.AccessLayers
     public abstract class S3Access
     {
         public IMyAmazonS3Client S3Client { get; set; }
+        public AmazonS3Config S3Config { get; set; }
 
         public S3Access()
         {
+
+            S3Config = new AmazonS3Config();
+            RegionEndpoint bucketRegion = RegionEndpoint.GetBySystemName(EnvironmentHandler.GetEnvironmentHandler().GetVariable("BucketRegion"));
+            S3Config.RegionEndpoint = bucketRegion;
+
+            S3Client = new MyAmazonS3Client(S3Config);
         }
 
         /// <summary>

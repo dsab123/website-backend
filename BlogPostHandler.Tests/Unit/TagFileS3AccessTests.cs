@@ -14,6 +14,14 @@ namespace BlogPostHandler.Tests.Unit
     [TestFixture]
     public class TagFileS3AccessTests
     {
+        [OneTimeSetUp]
+        public void SetEnvironmentVariables()
+        {
+            Environment.SetEnvironmentVariable("PostsDirectory", "test");
+            Environment.SetEnvironmentVariable("MetaDirectory", "test");
+            Environment.SetEnvironmentVariable("BucketRegion", "test");
+        }
+
         [OneTimeTearDown]
         public void AfterAll()
         {

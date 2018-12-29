@@ -16,7 +16,7 @@ namespace BlogPostHandler.Models
 
         public static int BlurbLength = 50; // how many chars to show in blurbs
 
-        public IEnumerable<BlogPost> RelatedPosts;
+        public List<BlogPost> RelatedPosts;
 
         [JsonConstructor]
         public BlogPost(int id, bool blurb = false)

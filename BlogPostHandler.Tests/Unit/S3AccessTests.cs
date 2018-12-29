@@ -15,6 +15,15 @@ namespace BlogPostHandler.Tests.Unit
     [TestFixture]
     public class S3AccessTests
     {
+
+        [OneTimeSetUp]
+        public void SetEnvironmentVariables()
+        {
+            Environment.SetEnvironmentVariable("PostsDirectory", "test");
+            Environment.SetEnvironmentVariable("MetaDirectory", "test");
+            Environment.SetEnvironmentVariable("BucketRegion", "test");
+        }
+
         public static GetObjectRequest GetGetObjectRequest(string bucketName = null, string key = null)
         {
             return new GetObjectRequest
