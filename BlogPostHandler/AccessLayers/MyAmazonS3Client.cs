@@ -1,5 +1,7 @@
 ﻿using Amazon.S3;
+using Amazon.S3.Model;
 using System;
+using System.Threading.Tasks;
 
 namespace BlogPostHandler.AccessLayers
 {
@@ -11,6 +13,11 @@ namespace BlogPostHandler.AccessLayers
 
         public MyAmazonS3Client()
         {
+        }
+
+        public virtual async Task<GetObjectResponse> GetObjectAsync(GetObjectRequest request)
+        {
+            return await base.GetObjectAsync(request);
         }
     }
 }

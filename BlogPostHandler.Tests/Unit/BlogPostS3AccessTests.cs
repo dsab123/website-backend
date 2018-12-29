@@ -1,5 +1,4 @@
 ﻿using System;
-using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
 using Amazon;
@@ -7,38 +6,10 @@ using Amazon.S3;
 using Amazon.S3.Model;
 using BlogPostHandler.AccessLayers;
 using BlogPostHandler.Models;
-using NSubstitute;
-using NSubstitute.ExceptionExtensions;
 using NUnit.Framework;
 
 namespace BlogPostHandler.Tests.Unit
 {
-    #region Fakes
-
-    // using extract and override
-    public class FakeBlogPostS3Access : BlogPostS3Access
-    {
-        public string Expected { get; set; }
-
-        public async override Task<string> GetObject(GetObjectRequest request)
-        {
-            return await Task.FromResult(Expected);
-        }
-    }
-
-    public class FakeMyAmazonS3Client : MyAmazonS3Client
-    {
-        public FakeMyAmazonS3Client(AmazonS3Config config) : base(config)
-        {
-        }
-
-        public override Task<GetObjectResponse> GetObjectAsync(GetObjectRequest request, CancellationToken cancellationToken = default(CancellationToken))
-        {
-            return Task.FromResult<GetObjectResponse>(null);
-        }
-    }
-
-    #endregion
 
     #region Utility
 
@@ -137,19 +108,18 @@ namespace BlogPostHandler.Tests.Unit
             }
         }
 
-
         #endregion
 
-        #region GetMetadata Tests
+        #region GetBlogPostMetadata Tests
 
-        public static object[] GetMetadata_Inputs = {
+        public static object[] GetBlogPostMetadata_Inputs = {
            "title\ntag1,tag2,tag3",
            "A Very Long Title that is long\nTag A, Tag B, Tag 100"
         };
 
         [Test]
-        [TestCaseSource("GetMetadata_Inputs")]
-        public void GetMetadata_SimpleString_ReturnsTrue(string expectedResult)
+        [TestCaseSource("GetBlogPostMetadata_Inputs")]
+        public void GetBlogPostMetadata_SimpleString_ReturnsTrue(string expectedResult)
         {
             // Arrange
             FakeBlogPostS3Access access = new FakeBlogPostS3Access
@@ -167,7 +137,7 @@ namespace BlogPostHandler.Tests.Unit
         }
 
         [Test]
-        public void GetMetadata_NullMetaDirectory_ThrowsException()
+        public void GetBlogPostMetadata_NullMetaDirectory_ThrowsException()
         {
             // Arrange
             BlogPostS3Access access = new BlogPostS3Access();
@@ -177,50 +147,13 @@ namespace BlogPostHandler.Tests.Unit
         }
 
         [Test]
-        public void GetMetadata_NullKeyName_ThrowsException()
+        public void GetBlogPostMetadata_NullKeyName_ThrowsException()
         {
             // Arrange
             BlogPostS3Access access = new BlogPostS3Access();
 
             // Act/Assert
             Assert.ThrowsAsync<ArgumentNullException>(() => access.GetBlogPostMetadata(new BlogPost(1), null, "test"));
-        }
-
-        #endregion
-
-        #region GetObject Tests
-
-        [Test]
-        //[Ignore("need to stub out AmazonS3Client and AmazonS3Config to test this rightly")]
-        public void GetObject_NullInput_ReturnsString()
-        {
-            // Arrange
-            var fakeS3Client = new FakeMyAmazonS3Client(Utility.GetS3Config("test"));
-
-            BlogPostS3Access access = new BlogPostS3Access("test", "test")
-            {
-                S3Client = fakeS3Client
-            };
-
-            // if I decide to return a string instead of throw an exception...
-            // Act
-            //var response = access.GetObject(new GetObjectRequest
-            //{
-            //    BucketName = Arg.Any<string>(),
-            //    Key = Arg.Any<string>()
-            //});
-            //response.Wait();
-            //var expectedResult = response.Result;
-            //
-            //// Assert
-            //Assert.That(BlogPostException.ErrorBlogPostContents.Equals(expectedResult));
-
-            // Act/Assert
-            Assert.ThrowsAsync<Exception>(() => access.GetObject(new GetObjectRequest
-            {
-                BucketName = Arg.Any<string>(),
-                Key = Arg.Any<string>()
-            }));
         }
 
         #endregion

@@ -1,6 +1,7 @@
-﻿using System.Threading.Tasks;
-using Amazon.S3.Model;
+﻿using Amazon.S3.Model;
 using BlogPostHandler.Models;
+
+using System.Threading.Tasks;
 
 namespace BlogPostHandler.AccessLayers
 {
