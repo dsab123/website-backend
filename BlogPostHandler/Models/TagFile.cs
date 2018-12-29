@@ -12,24 +12,49 @@ namespace BlogPostHandler.Models
     public class TagFile
     {
         public int Count {
-            get { 
+            get {
                 return dictionary.Count;
             }
         }
 
-        protected Dictionary<string, List<string>> dictionary;
-        
+        protected Dictionary<string, SortedSet<string>> dictionary;
+
         public TagFile()
         {
-            dictionary = new Dictionary<string, List<string>>();
+            dictionary = new Dictionary<string, SortedSet<string>>();
         }
 
-        public void AddEntry(string tag, List<string> ids)
+        //TODO if necessary - move the following functions to a TagFileLogic layer,
+        // they don't really fit in the Model if I'm being super-strict
+
+        // don't want to use a comparer just yet
+        public class Comparer : IEqualityComparer<string>
         {
-            dictionary.Add(tag, ids);
+            bool IEqualityComparer<string>.Equals(string x, string y)
+            {
+                return Int32.Parse(x) < Int32.Parse(y);
+            }
+
+            int IEqualityComparer<string>.GetHashCode(string obj)
+            {
+                return Int32.Parse(obj);
+            }
         }
 
-        public List<string> GetValue(string tag)
+        // need a way to WRITE these contents to file, duh
+        public void AddEntry(string tag, SortedSet<string> ids)
+        {
+            if (!dictionary.ContainsKey(tag))
+            {
+                dictionary.Add(tag, ids);
+            }
+            else
+            {
+                dictionary[tag].UnionWith(ids);
+            }
+        }
+
+        public SortedSet<string> GetIdsFromTag(string tag)
         {
             if (!dictionary.ContainsKey(tag))
             {
@@ -38,6 +63,25 @@ namespace BlogPostHandler.Models
 
             return dictionary.GetValueOrDefault(tag);
         }
-        
+
+        public List<string> GetIdsFromTags(string[] tags)
+        {
+            List<string> ids = null; 
+            foreach (var tag in tags)
+            {
+                if (dictionary.ContainsKey(tag))
+                {
+                    if (ids == null)
+                    {
+                        ids = new List<string>();
+                    }
+
+                    ids.AddRange(dictionary.GetValueOrDefault(tag));
+                }
+            }
+
+            return ids;
+        }
+
     }
 }

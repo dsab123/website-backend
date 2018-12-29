@@ -11,6 +11,7 @@ namespace BlogPostHandler.AccessLayers
     public class TagFileS3Access : S3Access, ITagFileS3Access, IDisposable
     {
         private static string TagFileName = "tagfile";
+        
 
         public TagFileS3Access()
         {
@@ -49,10 +50,35 @@ namespace BlogPostHandler.AccessLayers
                     throw new TagFileException($"there is an issue with tagfile format on line {i}.");
                 }
 
-                tagFile.AddEntry(lineContents[0], lineContents[1].Split(',').ToList());
+                List<string> ids = lineContents[1].Split(',').ToList();
+                tagFile.AddEntry(lineContents[0], new SortedSet<string>(ids));
             }
 
             return tagFile;
+        }
+
+        public async Task<List<BlogPost>> GetBlogPostIdsFromTag(string tag)
+        {
+            TagFile tagFile = await GetTagFile();
+            List<BlogPost> posts = new List<BlogPost>();
+            foreach(var id in tagFile.GetIdsFromTag(tag))
+            {
+                posts.Add(new BlogPost(Int32.Parse(id)));
+            }
+
+            return posts;
+        }
+
+        public async Task<List<BlogPost>> GetBlogPostIdsFromTags(string[] tags)
+        {
+            TagFile tagFile = await GetTagFile();
+            List<BlogPost> posts = new List<BlogPost>();
+            foreach (var id in tagFile.GetIdsFromTags(tags))
+            {
+                posts.Add(new BlogPost(Int32.Parse(id)));
+            }
+
+            return posts;
         }
 
 
