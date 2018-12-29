@@ -30,26 +30,23 @@ namespace BlogPostHandler
             string imagesDirectory = env.GetVariable("ImagesDirectory");
             string metaDirectory = env.GetVariable("MetaDirectory");
             
-            BlogPostS3Access access = new BlogPostS3Access(bucketName, bucketRegionString);
+            BlogPostS3Access blogPostAccess = new BlogPostS3Access(bucketName, bucketRegionString);
             
             // get post contents
             string keyName = blogPost.Id.ToString();
-
-            var contents = access.GetBlogPostContent(blogPost, postsDirectory, keyName); //TODO remove keyName since its the id of the blogpost
+            var contents = blogPostAccess.GetBlogPostContent(blogPost, postsDirectory, keyName); //TODO remove keyName since its the id of the blogpost
             contents.Wait();
-
             blogPost.Content = contents.Result;
 
             // get post metadata
-            var metadata = access.GetBlogPostMetadata(blogPost, metaDirectory, keyName);
+            var metadata = blogPostAccess.GetBlogPostMetadata(blogPost, metaDirectory, keyName);
             metadata.Wait();
             blogPost.Metadata = metadata.Result;
 
             // get related posts
-            //var relatedPosts = access.GetBlogPostsRelatedPosts();
-            //relatedPosts.Wait();
-            //blogPost.RelatedPosts = relatedPosts.Result;
-
+            TagFileS3Access tagFileAccess = new TagFileS3Access();
+            var relatedPosts = tagFileAccess.GetBlogPostIdsFromTags(blogPost.Metadata.Tags);
+            
             return blogPost;
                         
         }

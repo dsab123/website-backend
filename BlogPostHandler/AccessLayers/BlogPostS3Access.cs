@@ -90,19 +90,5 @@ namespace BlogPostHandler.AccessLayers
                 }
             }
         }
-
-        public async Task<IEnumerable<BlogPost>> GetBlogPostRelatedPosts(BlogPost blogPost, string keyName)
-        {
-            // get tagfile
-                // get object 'tagfile'
-                // read tagfile contents in as dictionary<string, dictionary<string>>()
-               
-            // compile list of ids w/same tags as blogPost
-
-            // get X of those objects as blurbs
-            
-
-            return new List<BlogPost>();
-        }
     }
 }
