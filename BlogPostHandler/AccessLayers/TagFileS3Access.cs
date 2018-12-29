@@ -1,4 +1,5 @@
-﻿using Amazon.S3.Model;
+﻿using Amazon.Lambda.Core;
+using Amazon.S3.Model;
 using BlogPostHandler.Models;
 using BlogPostHandler.Utility;
 using System;
@@ -52,6 +53,7 @@ namespace BlogPostHandler.AccessLayers
                 }
 
                 List<string> ids = lineContents[1].Split(',').ToList();
+
                 tagFile.AddEntry(lineContents[0], new SortedSet<string>(ids));
             }
 

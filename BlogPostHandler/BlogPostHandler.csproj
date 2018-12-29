@@ -8,6 +8,7 @@
 
   <ItemGroup>
     <None Remove="BlogPostHandler.zip" />
+    <None Remove="code.zip" />
   </ItemGroup>
 
   <ItemGroup>
