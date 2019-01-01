@@ -78,7 +78,10 @@ namespace BlogPostHandler.AccessLayers
             List<BlogPost> posts = new List<BlogPost>();
             foreach (var id in tagFile.GetIdsFromTags(tags))
             {
-                posts.Add(new BlogPost(Int32.Parse(id)));
+                BlogPost newPost = new BlogPost(Int32.Parse(id));
+                newPost.Blurb = true;
+
+                posts.Add(newPost);
             }
 
             return posts;

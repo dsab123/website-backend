@@ -1,13 +1,20 @@
 ﻿
+using Newtonsoft.Json;
 using System;
 using System.Linq;
+using System.Runtime.Serialization;
 
 namespace BlogPostHandler.Models
 {
     public class Metadata
     {
+        [JsonProperty(PropertyName = "id")]
         public int Id;
+
+        [JsonProperty(PropertyName = "title")]
         public string Title { get; set; }
+
+        [JsonProperty(PropertyName = "tags")]
         public string[] Tags { get; set; }
 
         public Metadata(int id, string title, string[] tags)

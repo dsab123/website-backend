@@ -7,19 +7,19 @@ namespace BlogPostHandler.Models
 {
     public class BlogPost
     {
-        [DataMember(Name = "id", EmitDefaultValue = false)]
+        [JsonProperty(PropertyName = "id")]
         public int Id { get; set; }
 
-        [DataMember(Name = "content", EmitDefaultValue = false)]
+        [JsonProperty(PropertyName = "content")]
         public string Content { get; set; } // surely pulling down a huge string as a blogpost will prove poor performance; I'll move this into its own object at some point
 
-        [DataMember(Name = "blurb", EmitDefaultValue = false)]
+        [JsonProperty(PropertyName = "blurb")]
         public bool Blurb { get; set; }
 
-        [DataMember(Name = "metadata", EmitDefaultValue = false)]
+        [JsonProperty(PropertyName = "metadata")]
         public Metadata Metadata;
 
-        [DataMember(Name = "relatedPosts", EmitDefaultValue = false)]
+        [JsonProperty(PropertyName = "relatedPosts")]
         public List<BlogPost> RelatedPosts;
 
         public static int BlurbLength = 50; // how many chars to show in blurbs
