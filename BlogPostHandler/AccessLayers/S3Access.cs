@@ -14,11 +14,11 @@ namespace BlogPostHandler.AccessLayers
     public abstract class S3Access
     {
         public IMyAmazonS3Client S3Client { get; set; }
+        public ILambdaLogger Logger { get; set; }
         public AmazonS3Config S3Config { get; set; }
 
         public S3Access()
         {
-
             S3Config = new AmazonS3Config();
             RegionEndpoint bucketRegion = RegionEndpoint.GetBySystemName(EnvironmentHandler.GetEnvironmentHandler().GetVariable("BucketRegion"));
             S3Config.RegionEndpoint = bucketRegion;
@@ -55,15 +55,17 @@ namespace BlogPostHandler.AccessLayers
             }
             catch (AmazonS3Exception s3Ex)
             {
-                LambdaLogger.Log(ExceptionLogFormatter.FormatExceptionLogMessage(request, s3Ex));
-                throw new Exception("Exception - " + s3Ex.Message, s3Ex);
+                Logger.Log(ExceptionLogFormatter.FormatExceptionLogMessage(request, s3Ex));
+
+                content = null;
             }
             catch (Exception ex)
             {
-                LambdaLogger.Log(ExceptionLogFormatter.FormatExceptionLogMessage(ex));
-                throw new Exception("Exception - " + ex.Message, ex);
-            }
+                Logger.Log(ExceptionLogFormatter.FormatExceptionLogMessage(ex));
 
+                content = null;
+            }
+            
             return content;
         }
     }

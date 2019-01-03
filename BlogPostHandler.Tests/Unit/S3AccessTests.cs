@@ -1,7 +1,9 @@
 ﻿using Amazon;
+using Amazon.Lambda.Core;
 using Amazon.S3;
 using Amazon.S3.Model;
 using BlogPostHandler.AccessLayers;
+using BlogPostHandler.Utility;
 using NSubstitute;
 using NSubstitute.Core;
 using NUnit.Framework;
@@ -34,7 +36,7 @@ namespace BlogPostHandler.Tests.Unit
         }
 
         [Test]
-        public void GetObject_NullInput_ThrowsException()
+        public void GetObject_NonExistentId_LogsError()
         {
             // Arrange
             var fakeS3Client = new FakeMyAmazonS3ClientThatReturnsNull(Utility.GetS3Config("test"));
@@ -44,21 +46,16 @@ namespace BlogPostHandler.Tests.Unit
                 S3Client = fakeS3Client
             };
 
-            // if I decide to return a string instead of throw an exception...
-            // Act
-            //var response = access.GetObject(new GetObjectRequest
-            //{
-            //    BucketName = Arg.Any<string>(),
-            //    Key = Arg.Any<string>()
-            //});
-            //response.Wait();
-            //var expectedResult = response.Result;
-            //
-            //// Assert
-            //Assert.That(BlogPostException.ErrorBlogPostContents.Equals(expectedResult));
+            var fakeLambdaLogger = Substitute.For<ILambdaLogger>();
+            access.Logger = fakeLambdaLogger;
 
-            // Act/Assert
-            Assert.ThrowsAsync<Exception>(() => access.GetObject(S3AccessTests.GetGetObjectRequest()));
+            // Act
+            var response = access.GetObject(S3AccessTests.GetGetObjectRequest());
+            response.Wait();
+            var expectedResult = response.Result;
+
+            // Assert
+            fakeLambdaLogger.Received().Log(Arg.Any<string>());
         }
 
         [Test]
