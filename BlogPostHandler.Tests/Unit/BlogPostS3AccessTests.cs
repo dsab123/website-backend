@@ -119,6 +119,18 @@ namespace BlogPostHandler.Tests.Unit
             }
         }
 
+        // NEED TO WRITE THIS TEST
+        [Test]
+        [Ignore("I need to write this when I have 5 minutes")]
+        public void GetBlogPostContent_NullFromGetObject_ReturnsNull()
+        {
+            // Arrange
+
+            // Act
+
+            // Assert
+        }
+
         #endregion
 
         #region GetBlogPostMetadata Tests
@@ -168,6 +180,18 @@ namespace BlogPostHandler.Tests.Unit
         }
 
         #endregion
+
+        #region ToMetadata Tests
+
+        [Test]
+        public void ToMetadata_NullInput_ReturnsNull()
+        {
+            // Arrange/Act/Assert
+            Assert.That(Metadata.ToMetadata(new Metadata(-1), null) == null);
+        }
+
+        #endregion
+
 
         #region GetBlogPost Tests 
 
