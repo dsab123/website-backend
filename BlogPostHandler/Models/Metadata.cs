@@ -31,6 +31,11 @@ namespace BlogPostHandler.Models
 
         public static Metadata ToMetadata(Metadata metadata, string input)
         {
+            if (input == null)
+            {
+                return null;
+            }
+
             metadata = metadata ?? new Metadata(-1);
 
             string[] parsedInput = input.Split('\n');

@@ -30,31 +30,40 @@ namespace BlogPostHandler
             string imagesDirectory = env.GetVariable("ImagesDirectory");
             string metaDirectory = env.GetVariable("MetaDirectory");
             
+            // get blog post
             BlogPostS3Access blogPostAccess = new BlogPostS3Access(bucketName, bucketRegionString);
+            blogPostAccess.Logger = context.Logger;
 
             var blogPostResonse = blogPostAccess.GetBlogPost(blogPost);
             blogPostResonse.Wait();
             blogPost = blogPostResonse.Result;
 
-            // get related posts
-            TagFileS3Access tagFileAccess = new TagFileS3Access();
-            var relatedPostsResponse = tagFileAccess.GetBlogPostIdsFromTags(blogPost.Metadata.Tags);
-            relatedPostsResponse.Wait();
-            blogPost.RelatedPosts = relatedPostsResponse.Result;
-
-            // remove all related posts which are the current post
-            blogPost.RelatedPosts.RemoveAll(b => b.Id == blogPost.Id);
-
-            // populate related posts objects
-            for (int i = 0; i < blogPost.RelatedPosts.Count; i++)
+            if (blogPost.Metadata != null)
             {
-                var relatedPostResponse = blogPostAccess.GetBlogPost(blogPost.RelatedPosts[i]);
-                relatedPostResponse.Wait();
-                blogPost.RelatedPosts[i] = relatedPostResponse.Result;
-            }            
+                // get related posts
+                TagFileS3Access tagFileAccess = new TagFileS3Access();
+                tagFileAccess.Logger = context.Logger;
+                var relatedPostsResponse = tagFileAccess.GetBlogPostIdsFromTags(blogPost.Metadata.Tags);
+                relatedPostsResponse.Wait();
+                blogPost.RelatedPosts = relatedPostsResponse.Result;
+
+                // remove all related posts which are the current post
+                blogPost.RelatedPosts.RemoveAll(b => b.Id == blogPost.Id);
+
+                // populate related posts objects
+                for (int i = 0; i < blogPost.RelatedPosts.Count; i++)
+                {
+                    var relatedPostResponse = blogPostAccess.GetBlogPost(blogPost.RelatedPosts[i]);
+                    relatedPostResponse.Wait();
+                    blogPost.RelatedPosts[i] = relatedPostResponse.Result;
+                }
+            }
+            else
+            {
+                return null;
+            }
 
             return blogPost;
-                        
         }
     }
 }

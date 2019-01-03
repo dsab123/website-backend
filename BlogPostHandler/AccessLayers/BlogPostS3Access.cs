@@ -55,12 +55,17 @@ namespace BlogPostHandler.AccessLayers
 
             var content = await GetObject(getRequest);
 
+            if (content == null)
+            {
+                return null;
+            }
+
             // check blurb qs value
             if (post.Blurb == true)
             {
                 content = content.Substring(0, content.Length > BlogPost.BlurbLength ? BlogPost.BlurbLength : content.Length);
             }
-
+            
             return content;
         }
 

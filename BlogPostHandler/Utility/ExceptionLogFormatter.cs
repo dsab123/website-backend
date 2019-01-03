@@ -33,7 +33,7 @@ namespace BlogPostHandler.Utility
         {
             builder = builder ?? new StringBuilder();
 
-            builder.Append($"{ex.GetType()} - bucketName: {request.BucketName},  key: {request.Key}.");
+            builder.Append($"{ex.GetType()} Exception - bucketName: {request.BucketName},  key: {request.Key}.");
             builder.AppendLine();
 
             builder.Append($"\tAmazon ID2 Token: {ex.AmazonId2}");
