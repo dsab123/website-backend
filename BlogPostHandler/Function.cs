@@ -56,6 +56,10 @@ namespace BlogPostHandler
                     var relatedPostResponse = blogPostAccess.GetBlogPost(blogPost.RelatedPosts[i]);
                     relatedPostResponse.Wait();
                     blogPost.RelatedPosts[i] = relatedPostResponse.Result;
+
+                    // remove Markdown identifiers in the teaser content text, as it shows up
+                    // as a related post
+                    blogPost.RelatedPosts[i].Content = StringHelper.StripMarkdownIdentifiers(blogPost.RelatedPosts[i].Content);
                 }
             }
             else
