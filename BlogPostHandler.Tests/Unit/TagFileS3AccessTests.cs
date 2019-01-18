@@ -181,5 +181,36 @@ namespace BlogPostHandler.Tests.Unit
             ids.Sort();
             Assert.That(ids.All(new List<int> { 1, 2, 4, 8, 10 }.Contains));
         }
+
+        [Test]
+        public void GetBlogPostIdsFromTag_MultipleInstancesOfSamePost_NoDuplicates()
+        {
+
+            // Arrange
+            var fakeAccess = Substitute.ForPartsOf<TagFileS3Access>();
+
+            TagFile fakeTagFile = new TagFile();
+            fakeTagFile.AddEntry("scripture", new SortedSet<string> { "1", "4" });
+            fakeTagFile.AddEntry("theology", new SortedSet<string> { "1", "4" });
+
+            fakeAccess.Configure().GetTagFile().ReturnsForAnyArgs(fakeTagFile);
+
+            // Act
+            var response = fakeAccess.GetBlogPostIdsFromTags(new string[] { "scripture", "theology" });
+            response.Wait();
+            List<BlogPost> result = response.Result;
+
+            // Assert
+            var ids = result.Select(r => r.Id).ToList();
+            ids.Sort();
+            Assert.That(ids.All(new List<int> { 1, 4}.Contains));
+        }
+
+        [Test]
+        [Ignore("need to write!")]
+        public void GetBlogPostIdsFromTag_TagNotInTagFile_ReturnsEmptyList()
+        {
+
+        }
     }
 }

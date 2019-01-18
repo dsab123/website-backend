@@ -75,16 +75,20 @@ namespace BlogPostHandler.AccessLayers
         public async Task<List<BlogPost>> GetBlogPostIdsFromTags(string[] tags)
         {
             TagFile tagFile = await GetTagFile();
-            List<BlogPost> posts = new List<BlogPost>();
-            foreach (var id in tagFile.GetIdsFromTags(tags))
+            Dictionary<int, BlogPost> posts = new Dictionary<int, BlogPost>();
+            foreach (var idObject in tagFile.GetIdsFromTags(tags))
             {
-                BlogPost newPost = new BlogPost(Int32.Parse(id));
+                int id = Int32.Parse(idObject);
+                BlogPost newPost = new BlogPost(id);
                 newPost.Blurb = true;
 
-                posts.Add(newPost);
+                if (posts.TryGetValue(id, out BlogPost value) == false)
+                {
+                    posts.Add(id, newPost);
+                }
             }
 
-            return posts;
+            return posts.Values.ToList();
         }
 
 
