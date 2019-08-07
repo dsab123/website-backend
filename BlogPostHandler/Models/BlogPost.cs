@@ -22,7 +22,7 @@ namespace BlogPostHandler.Models
         [JsonProperty(PropertyName = "relatedPosts")]
         public List<BlogPost> RelatedPosts;
 
-        public static int BlurbLength = 50; // how many chars to show in blurbs
+        public static int BlurbLength = 75; // how many chars to show in blurbs
 
         [JsonConstructor]
         public BlogPost(int id, bool blurb = false)
