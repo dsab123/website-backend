@@ -34,9 +34,9 @@ namespace BlogPostHandler
             BlogPostS3Access blogPostAccess = new BlogPostS3Access(bucketName, bucketRegionString);
             blogPostAccess.Logger = context.Logger;
 
-            var blogPostResonse = blogPostAccess.GetBlogPost(blogPost);
-            blogPostResonse.Wait();
-            blogPost = blogPostResonse.Result;
+            var blogPostResponse = blogPostAccess.GetBlogPost(blogPost);
+            blogPostResponse.Wait();
+            blogPost = blogPostResponse.Result;
 
             if (blogPost.Metadata != null)
             {
